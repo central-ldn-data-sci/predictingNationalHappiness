@@ -1,0 +1,1 @@
+Please place any solutions or ideas in python from the meeting here. Thank you
