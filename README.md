@@ -4,7 +4,7 @@ We'll be using the World Development Indicator Dataset (WDI) to see which factor
 
 [World Happiness Report](https://en.wikipedia.org/wiki/World_Happiness_Report)
 
-The WDI dataset is available both as an [R package](https://github.com/vincentarelbundock/WDI), and integrated directly in the [Pandas library as an I/O module] (http://pandas-docs.github.io/pandas-docs-travis/#world-bank).
+The WDI dataset is available both as an [R package](https://github.com/vincentarelbundock/WDI), and integrated directly in the [Pandas library as an I/O module] (https://pypi.python.org/pypi/wbdata).
 
 ---
 
