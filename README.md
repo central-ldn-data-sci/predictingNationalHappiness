@@ -23,7 +23,6 @@ Pre-Requisites:
 Goal: Using the WDI dataset, figure out which factors are most strongly predictive of well being in a given country - for example, is lack of debt predictive of a country’s happiness score?
 
 Topics: Data Munging, Joining, Feature Selection, Modeling or Visualization
-Slack Chat - https://central-ldn-data-sci.slack.com/messages/general/ 
 
 * I. Get the Well-Being Data - csv from github
 * II. Get the Other Features on a Country Level 
