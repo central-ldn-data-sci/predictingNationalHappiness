@@ -28,7 +28,7 @@ Topics: Data Munging, Joining, Feature Selection, Modeling or Visualization
 * II. Get the Other Features on a Country Level 
 R - WDI dataset 
 WDI::WDIsearch() to see factors - look at the documentation to see how to look up the other factors
-Python  instructions here 
+Python  instructions [here] (https://pypi.python.org/pypi/wbdata) 
 * III. Join the two datasets on the country name. Your output should look like…
 Country, happiness_score, feature_1, feature_2, etc where it’s up to you to select which features and how many to put into the dataset.
 
