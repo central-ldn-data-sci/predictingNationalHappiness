@@ -30,7 +30,7 @@ Slack Chat - https://central-ldn-data-sci.slack.com/messages/general/
 R - WDI dataset 
 WDI::WDIsearch() to see factors - look at the documentation to see how to look up the other factors
 Python  instructions here 
-III. Join the two datasets on the country name. Your output should look like…
+* III. Join the two datasets on the country name. Your output should look like…
 Country, happiness_score, feature_1, feature_2, etc where it’s up to you to select which features and how many to put into the dataset.
 
 Potential Issues - joining on country name - it may not be the same string between the sets.
