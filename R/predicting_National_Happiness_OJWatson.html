@@ -141,10 +141,10 @@ $(document).ready(function () {
 setwd(&quot;C:/Users/Oliver/GoogleDrive/DataScience/HappinessProject&quot;)
 
 # Install and load required packages
-# install.packages(&quot;countrycode&quot;,)
-# install.packages(&quot;WDI&quot;)
-# install.packages(&quot;dplyr&quot;)
-# install.packages(&quot;car&quot;)
+install.packages(&quot;countrycode&quot;,repos=&quot;http://cloud.r-project.org/&quot;)
+install.packages(&quot;WDI&quot;,repos=&quot;http://cloud.r-project.org/&quot;)
+install.packages(&quot;dplyr&quot;,repos=&quot;http://cloud.r-project.org/&quot;)
+install.packages(&quot;car&quot;,repos=&quot;http://cloud.r-project.org/&quot;)
 # Package for dealing with country iso character abbrevations
 library(countrycode)
 # Package for loading World Development Indicators
@@ -183,7 +183,7 @@ iso2s[77] &lt;- &quot;XK&quot;</code></pre>
 allIndicators &lt;- WDI::WDIsearch()
 
 # Grab all the data (takes a couple of mins)
-all_from_WDI &lt;- WDI(country=&quot;all&quot;, indicator=c(allIndicators[,1]),start=2014, end=2016)
+all_from_WDI &lt;- WDI::WDI(country=&quot;all&quot;, indicator=c(allIndicators[,1]),start=2014, end=2016)
 
 # Grab the unique country iso2cs from WDI
 iso2s_from_WDI &lt;- unique(all_from_WDI$iso2c)
@@ -222,7 +222,7 @@ names(WDI_Final)[4:42] &lt;- allIndicators[indicator.pos,2]</code></pre>
 <pre class="r"><code># Plot to a pdf (easier to view sequences of plots this way i feel)
 pdf(file=&quot;MultivariateInvestigation.pdf&quot;)
 for(i in 1:6){
-scatterplotMatrix(WDI_Final[c(( ((i-1)*3) + 4 ):(((i-1)*3) + 6),43)])
+car::scatterplotMatrix(WDI_Final[c(( ((i-1)*3) + 4 ):(((i-1)*3) + 6),43)])
 }
 dev.off()
 
@@ -233,7 +233,7 @@ best.correlates &lt;- which(happiness.correlates&gt;0.6)
 # Save them
 pdf(file=&quot;BestCorrelates.pdf&quot;)
 for(i in 1:(length(best.correlates)/2)){
-scatterplotMatrix(WDI_Final[as.numeric(c(best.correlates[(((i-1)*2)+1):(2*i)],43))])
+car::scatterplotMatrix(WDI_Final[as.numeric(c(best.correlates[(((i-1)*2)+1):(2*i)],43))])
 }
 dev.off()
 

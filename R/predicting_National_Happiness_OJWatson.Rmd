@@ -17,16 +17,16 @@ For best results load this Rmd file into R studio and click 'Knit HTML'
 
 # Acquiring necessary packages and setting up the workspace
 
-``` {r setup, message = FALSE, warning = FALSE}
+``` {r setup, message = FALSE, warning = FALSE,results='hide'}
 
 # Set working directory to where you have stored the data
 setwd("C:/Users/Oliver/GoogleDrive/DataScience/HappinessProject")
 
 # Install and load required packages
-# install.packages("countrycode",)
-# install.packages("WDI")
-# install.packages("dplyr")
-# install.packages("car")
+install.packages("countrycode",repos="http://cloud.r-project.org/")
+install.packages("WDI",repos="http://cloud.r-project.org/")
+install.packages("dplyr",repos="http://cloud.r-project.org/")
+install.packages("car",repos="http://cloud.r-project.org/")
 # Package for dealing with country iso character abbrevations
 library(countrycode)
 # Package for loading World Development Indicators
@@ -76,7 +76,7 @@ dataset iso2cs we can then start to subset the data.
 allIndicators <- WDI::WDIsearch()
 
 # Grab all the data (takes a couple of mins)
-all_from_WDI <- WDI(country="all", indicator=c(allIndicators[,1]),start=2014, end=2016)
+all_from_WDI <- WDI::WDI(country="all", indicator=c(allIndicators[,1]),start=2014, end=2016)
 
 # Grab the unique country iso2cs from WDI
 iso2s_from_WDI <- unique(all_from_WDI$iso2c)
@@ -126,7 +126,7 @@ so a simple exploraton of all the correlations was conducted before looking at t
 # Plot to a pdf (easier to view sequences of plots this way i feel)
 pdf(file="MultivariateInvestigation.pdf")
 for(i in 1:6){
-scatterplotMatrix(WDI_Final[c(( ((i-1)*3) + 4 ):(((i-1)*3) + 6),43)])
+car::scatterplotMatrix(WDI_Final[c(( ((i-1)*3) + 4 ):(((i-1)*3) + 6),43)])
 }
 dev.off()
 
@@ -137,7 +137,7 @@ best.correlates <- which(happiness.correlates>0.6)
 # Save them
 pdf(file="BestCorrelates.pdf")
 for(i in 1:(length(best.correlates)/2)){
-scatterplotMatrix(WDI_Final[as.numeric(c(best.correlates[(((i-1)*2)+1):(2*i)],43))])
+car::scatterplotMatrix(WDI_Final[as.numeric(c(best.correlates[(((i-1)*2)+1):(2*i)],43))])
 }
 dev.off()
 
