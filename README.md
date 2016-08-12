@@ -26,10 +26,8 @@ Country, happiness_score, feature_1, feature_2, etc where it’s up to you to se
 Potential Issues - joining on country name - it may not be the same string between the sets.
 
 How you approach feature selection depends on what you want to focus on for the evening.
-(**) If you are less experienced, my recommendation would be to pick 2-3 features you think might be interesting and then run a multivariate linear regression on them. Focus on getting the mathematical concepts and the coding implementation (R, Python, etc) rather than making the perfect model. Alternatively, you could focus on visualization, and, although this isn't modeling directly, it will help you understand which features you may want to use if you did want to model it - download Tableau Public and pop the csv in to see what you learn. 
-(**) If you are more experienced, it’s totally up to you how you approach the problem! Some ideas:
-* Practice a skill you want to improve at - for example, if you are usually a model-er, try doing a visualization approach, etc. If you usually use R, try python, etc. A new model you haven’t done, etc. 
-* If mentoring is your interest (teaching helps you solidify learning), help out one of the n00bs.
+*  If you are less experienced, my recommendation would be to pick 2-3 features you think might be interesting and then run a multivariate linear regression on them. Focus on getting the mathematical concepts and the coding implementation (R, Python, etc) rather than making the perfect model. Alternatively, you could focus on visualization, and, although this isn't modeling directly, it will help you understand which features you may want to use if you did want to model it - download Tableau Public and pop the csv in to see what you learn. 
+* If you are more experienced, it’s totally up to you how you approach the problem! Some ideas: (1) Practice a skill you want to improve at - for example, if you are usually a model-er, try doing a visualization approach, etc. If you usually use R, try python, etc. A new model you haven’t done, etc. (2) If mentoring is your interest (teaching helps you solidify learning), help out one of the n00bs.
 
 Note we probably won’t finish this problem tonight - 2 hours likely too short, but give it a go and see what you learn. Follow up after if you liked it. Feedback is welcome. 
 
