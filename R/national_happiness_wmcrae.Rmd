@@ -1,0 +1,238 @@
+---
+title: "happiness_exploration_wmcrae"
+author: "Will Bidstrup"
+date: "2 August 2016" 
+output: 
+  html_document: 
+    toc: yes
+---
+Notes from Meetup 2nd August 2016, 2 hour challenge!
+
+I will spend the first hour preparing and exploring, and the second hour trying to define which variables can be used to predict happiness.
+
+For best results load this Rmd file into R studio and click 'Knit HTML'
+
+# Preparing workspace
+I load up some packages I expect to use.
+
+``` {r setup_load_clean, echo = FALSE, include = FALSE, message = FALSE, warning = FALSE}
+# Set working directory
+setwd("/Users/wbidst/Desktop/DataScienceLondon/World_Happiness")
+
+# Install packages
+install.packages("plyr", repos="http://cran.rstudio.com/")
+library(plyr)
+install.packages("dplyr", repos="http://cran.rstudio.com/")
+library(dplyr)
+install.packages("stringr", repos="http://cran.rstudio.com/")
+library(stringr)
+install.packages("tidyr", repos="http://cran.rstudio.com/")
+library(tidyr)
+install.packages("ggplot2", repos="http://cran.rstudio.com/")
+library(ggplot2)
+install.packages("lubridate", repos="http://cran.rstudio.com/")
+library(lubridate)
+install.packages("rattle", repos="http://cran.rstudio.com/")
+library(rattle) 
+install.packages("rpart.plot", repos="http://cran.rstudio.com/")
+library(rpart.plot)
+install.packages("RColorBrewer",repos="http://cran.rstudio.com/")
+library(RColorBrewer) 
+library(rpart) 
+
+```
+
+My package list (have hidden the code to install)...
+install.packages("plyr", repos="http://cran.rstudio.com/")
+library(plyr)
+install.packages("dplyr", repos="http://cran.rstudio.com/")
+library(dplyr)
+install.packages("stringr", repos="http://cran.rstudio.com/")
+library(stringr)
+install.packages("tidyr", repos="http://cran.rstudio.com/")
+library(tidyr)
+install.packages("ggplot2", repos="http://cran.rstudio.com/")
+library(ggplot2)
+install.packages("lubridate", repos="http://cran.rstudio.com/")
+library(lubridate)
+install.packages("rattle", repos="http://cran.rstudio.com/")
+library(rattle) 
+install.packages("rpart.plot", repos="http://cran.rstudio.com/")
+library(rpart.plot)
+install.packages("RColorBrewer",repos="http://cran.rstudio.com/")
+library(RColorBrewer) 
+library(rpart) 
+
+
+# Preparing the data
+Looked at 2 sources...
+
+1. The 'happiness.RData' from the [meetup github](https://github.com/central-ldn-data-sci/predictingNationalHappiness/tree/master/data)
+2. An R.Data package with two nested lists, found [here](https://github.com/vincentarelbundock/WDI/tree/master/data)
+
+From these two sources, I created 3 dataframes.
+
+``` {r, data_prep}
+# Load in data
+load("/Users/wbidst/Desktop/DataScienceLondon/World_Happiness/happiness.RData")
+load("/Users/wbidst/Desktop/DataScienceLondon/World_Happiness/WDI_data.RData")
+
+# Create data frames
+df1 <- as.data.frame(happiness.df)
+df2 <- do.call(rbind.data.frame, WDI_data[1])
+df3 <- do.call(rbind.data.frame, WDI_data[2])
+
+```
+
+First look at each df...
+
+``` {r, firstlook}
+# Structure
+str(df1)  # Nice and simple, shows each country, the 2016 happiness score and the change
+str(df2)  # A real mf, 7000+ factors of 'indicators', no immediately apparent what I can do with these
+str(df3)  # Some nice categorical variables for each country, perhaps I can add these to df1
+
+# Summary
+summary(df1)
+summary(df2)
+summary(df3)
+
+```
+
+``` {r clean_tidy_combine}
+# df1 tidy up column types
+df1$Happiness.2016 <- as.numeric(as.character(df1$Happiness.2016)) # Be careful when converting factors to numeric - start by converting to character
+df1$Happiness.Change <- as.numeric(as.character(df1$Happiness.Change))
+summary(df1) # Now we can see the happiness level and change expressed as numbers
+
+# df2 tidy up column types
+## While I am not sure what all these ar, I will treat as character by default
+unfactorize <- function(df){
+  for(i in which(sapply(df, class) == "factor")) df[[i]] = as.character(df[[i]])
+  return(df)
+}
+df2 <- unfactorize(df2)
+# I am planning to try and match the character values with the iso3c and iso2c variables in df3...somehow
+
+# df3 tidy up column types
+## Will unfactorize all these as well, and then call as factor the ones I need
+df3 <- unfactorize(df3)
+## These should be factors or numeric
+df3$country <- as.factor(df3$country)
+df3$income <- as.factor(df3$income)
+df3$lending <- as.factor(df3$lending)
+df3$longitude <- as.numeric(df3$longitude)
+df3$latitude <- as.numeric(df3$latitude)
+str(df3)
+
+# Now I have three data frames all with (sort of) the right types of columns
+```
+
+Now for the tricky bit, trying to combine the dataframes to create one master dataframe. My thinking is to use df1 as the base, as this is the set with the outcomes we want to predict, or the 'train' set.
+
+Step 1 - add more variables to df 1 so we can see where there is correlation between highest happiness change
+Step 2 - define a set of data of the countries that do not have a happiness score and try to predict it
+
+``` {r, combine}
+# Adding df3 to df1
+
+## There are only 157 countries in df1, while there are 248 in df3. So, first we need to reduce df3 to only 157 rows (hopefully country names are the same!!!)
+
+df1$Country <- as.character(df1$Country)
+df1$Country <- str_trim(df1$Country) # Get rid of whitespace
+df3$country <- as.character(df3$country)
+df3$country <- str_trim(df3$country) # Get rid of whitespace
+## Try merge...
+df3$Country <- df3$country 
+
+df_boss <- merge(df1, df3, by = "Country", all.x = TRUE) # This works! By specifying 'all.x = TRUE' we keep all elements of df1. Where there are no additional variables to be found from df3, we have NA values
+
+df <- df_boss[complete.cases(df_boss[,c(1,4)]),] # Only the counries will all variables
+
+```
+
+Now to have a look at the combined df
+
+``` {r, df_boss}
+# First look
+str(df)
+df$country <- NULL # Remove this
+
+# Finding the top and bottom 10 happiest countries
+top10happy <- df %>%
+  arrange(desc(Happiness.2016)) %>%
+  head(10)
+
+top10changed <- df %>%
+  arrange(desc(Happiness.Change)) %>%
+  head(10)
+
+bot10happy <- df %>%
+  arrange(Happiness.2016) %>%
+  head(10)
+
+bot10changed <- df %>%
+  arrange(Happiness.Change) %>%
+  head(10)
+
+# Now, label the original data set based on the top and bottom 10 so they can be identified in context of the whole set
+
+df$type <- ifelse(df$Country %in% top10happy$Country, "Top10",
+                  ifelse(df$Country %in% bot10happy$Country, "Bot10","None"))
+
+df$top10 <- ifelse(df$Country %in% top10happy$Country, 1, 0)
+
+df$bot10 <- ifelse(df$Country %in% bot10happy$Country, 1, 0)
+```
+
+# Which variables are important in predicting top 10??
+```{r, predict}
+# Now, can I see which variables lead to a country being in Top 10 or Bottom 10.
+
+# tree <- rpart(top10 ~ region + income + lending, data = df, method = "class")
+# fancyRpartPlot(tree) # Does not work - need to investigate!
+
+```
+
+# Exploratory visuals
+```{r visuals}
+# Exploratory visuals
+## Theme
+theme_a <- theme(panel.background = element_blank(),
+                 legend.background = element_blank(),
+                 legend.key = element_blank(),
+                 panel.grid = element_blank(),
+                 axis.text = element_text(colour = "black"),
+                 axis.line.x = element_line(colour = "black", size = 0.5),
+                 axis.line.y = element_line(colour = "black", size = 0.5))
+
+# Plots
+ggplot(data = df, aes(x = income, y = Happiness.2016, fill = "type")) +
+  geom_point(shape = 21, alpha = 0.5, position = "jitter") +
+  geom_boxplot() +
+  theme_a +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Income and happiness", x = "Income", y = "Happiness")
+  
+ggplot(data = df, aes(x = region, y = Happiness.2016, fill = "type")) +
+  geom_point(shape = 21, alpha = 0.5, position = "jitter") +
+  geom_boxplot() +
+  theme_a +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Region and happiness", x = "Region", y = "Happiness")
+  
+ggplot(data = df, aes(x = lending, y = Happiness.2016, fill = "type")) +
+  geom_point(shape = 21, alpha = 0.5, position = "jitter") +
+  geom_boxplot() +
+  theme_a +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Lending and happiness", x = "Lending", y = "Happiness")  
+
+ggplot(data = df, aes(x = latitude, y = longitude, fill = Happiness.2016)) +
+  geom_point(shape = 21, alpha = 0.5) +
+  theme_a +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Location and happiness", x = "Latitude", y = "Longitude")
+```
+
+
